@@ -40,15 +40,18 @@ public class ClassManagedBean implements Serializable {
     }
 
     public void saveClass() {
-        if (selectedClass == null || selectedClass.getClassName() == null || selectedClass.getClassName().isEmpty()) {
+        if (selectedClass == null || selectedClass.getClassName() == null || selectedClass.getClassName().trim().isEmpty()) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Class name is required"));
             PrimeFaces.current().ajax().update("form:messages");
             return;
         }
 
-         boolean exists = servicesLocal.classNameExists(selectedClass.getClassName(), selectedClass.getClassId());
+        boolean exists = servicesLocal.classNameExists(
+                selectedClass.getClassName(),
+                selectedClass.getClassId()
+        );
 
-        if (exists && selectedClass.getClassId() == null) {
+        if (exists) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Class Already Exists"));
             PrimeFaces.current().ajax().update("form:messages");
             return;

@@ -51,6 +51,16 @@ public class StudentManagedBean implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, message);
                 return;
             }
+            boolean exists = studentList.stream()
+                    .anyMatch(s -> s.getStudentName().equalsIgnoreCase(selectedStudent.getStudentName())
+                    && s.getClassId().equals(selectedStudent.getClassId())
+                    && (selectedStudent.getStudentId() == null || !s.getStudentId().equals(selectedStudent.getStudentId())));
+
+            if (exists) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Student with same name already exists in this class");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
 
             // Save or update the student in the database
             if (selectedStudent.getStudentId() == null) {
@@ -64,7 +74,6 @@ public class StudentManagedBean implements Serializable {
                 FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Student updated successfully");
                 FacesContext.getCurrentInstance().addMessage(null, message);
             }
-
 
             selectedStudent = new Student();  // Reset selectedStudent for new data entry
 
@@ -81,7 +90,8 @@ public class StudentManagedBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }
-        public void deleteStudent(Student student) {
+
+    public void deleteStudent(Student student) {
         try {
             if (student != null && student.getStudentId() != null) {
                 schoolServicesLocal.deleteStudent(student.getStudentId());
